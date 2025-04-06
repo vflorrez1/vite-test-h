@@ -19,7 +19,7 @@ export function SlidingPanelGeneric({
   size = 25, // default to 25% of viewport
   style = {},
   zIndex = 3000,
-  preventScroll = true,
+  preventScroll = false,
   children,
 }: SlidingPanelGenericProps) {
   // Lock scrolling when panel is open (if preventScroll is true)
