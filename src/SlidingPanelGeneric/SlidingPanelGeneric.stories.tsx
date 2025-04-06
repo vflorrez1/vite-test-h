@@ -22,9 +22,8 @@ const meta = {
       description: "The direction from which the panel slides",
     },
     size: {
-      control: "text",
-      description:
-        "Size of the panel (width for left/right, height for top/bottom)",
+      control: { type: "range", min: 0, max: 100, step: 1 },
+      description: "Size of the panel in percentage (0-100)",
     },
     zIndex: {
       control: "number",
@@ -66,7 +65,7 @@ const meta = {
             <h2 style={{ color: "#333" }}>Features</h2>
             <ul style={{ color: "#666", lineHeight: 1.6 }}>
               <li>Slides from any direction (right, left, top, bottom)</li>
-              <li>Customizable size (width or height)</li>
+              <li>Customizable size (0-100% of viewport)</li>
               <li>Adjustable z-index for layering</li>
               <li>Smooth transitions</li>
               <li>Flexible content</li>
@@ -82,11 +81,18 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const PanelContent = ({ direction }: { direction: SlideDirection }) => (
+const PanelContent = ({
+  direction,
+  size,
+}: {
+  direction: SlideDirection;
+  size: number;
+}) => (
   <div style={{ padding: "1.5rem" }}>
     <h2 style={{ margin: "0 0 1rem", color: "#333" }}>Panel Content</h2>
     <p style={{ color: "#666", lineHeight: 1.6 }}>
-      This panel slides in from the {direction}.
+      This panel slides in from the {direction} and takes up {size}% of the
+      viewport.
     </p>
     <p style={{ color: "#666", lineHeight: 1.6 }}>
       You can change the direction and size using the controls below.
@@ -99,8 +105,8 @@ export const Closed: Story = {
   args: {
     isOpen: false,
     direction: "right",
-    size: "20rem",
-    children: <PanelContent direction="right" />,
+    size: 25,
+    children: <PanelContent direction="right" size={25} />,
   },
 };
 
@@ -109,8 +115,8 @@ export const FromRight: Story = {
   args: {
     isOpen: true,
     direction: "right",
-    size: "20rem",
-    children: <PanelContent direction="right" />,
+    size: 25,
+    children: <PanelContent direction="right" size={25} />,
   },
 };
 
@@ -119,8 +125,8 @@ export const FromLeft: Story = {
   args: {
     isOpen: true,
     direction: "left",
-    size: "20rem",
-    children: <PanelContent direction="left" />,
+    size: 25,
+    children: <PanelContent direction="left" size={25} />,
   },
 };
 
@@ -129,8 +135,8 @@ export const FromTop: Story = {
   args: {
     isOpen: true,
     direction: "top",
-    size: "20rem",
-    children: <PanelContent direction="top" />,
+    size: 25,
+    children: <PanelContent direction="top" size={25} />,
   },
 };
 
@@ -139,8 +145,8 @@ export const FromBottom: Story = {
   args: {
     isOpen: true,
     direction: "bottom",
-    size: "20rem",
-    children: <PanelContent direction="bottom" />,
+    size: 25,
+    children: <PanelContent direction="bottom" size={25} />,
   },
 };
 
@@ -149,7 +155,7 @@ export const WithCustomContent: Story = {
   args: {
     isOpen: true,
     direction: "right",
-    size: "50%",
+    size: 50,
     children: (
       <div style={{ padding: "1.5rem" }}>
         <h2 style={{ margin: "0 0 1rem", color: "#333" }}>Custom Panel</h2>
@@ -234,13 +240,13 @@ export const LayeredPanels: Story = {
   args: {
     isOpen: true,
     direction: "right",
-    size: "20rem",
+    size: 25,
   },
   render: (args) => (
     <>
       <SlidingPanelGeneric
         {...args}
-        size="30rem"
+        size={40}
         zIndex={2000}
         children={
           <div style={{ padding: "1.5rem", background: "#f8f8f8" }}>
@@ -248,7 +254,7 @@ export const LayeredPanels: Story = {
               Background Panel
             </h2>
             <p style={{ color: "#666", lineHeight: 1.6 }}>
-              This panel has a lower z-index (2000)
+              This panel has a lower z-index (2000) and is 40% wide
             </p>
           </div>
         }
@@ -262,7 +268,7 @@ export const LayeredPanels: Story = {
               Foreground Panel
             </h2>
             <p style={{ color: "#666", lineHeight: 1.6 }}>
-              This panel has a higher z-index (3000)
+              This panel has a higher z-index (3000) and is 25% wide
             </p>
           </div>
         }

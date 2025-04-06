@@ -6,7 +6,7 @@ export type SlideDirection = "right" | "left" | "top" | "bottom";
 interface SlidingPanelGenericProps extends PropsWithChildren {
   isOpen: boolean;
   direction?: SlideDirection;
-  size?: string;
+  size?: number;
   className?: string;
   zIndex?: number;
 }
@@ -14,13 +14,14 @@ interface SlidingPanelGenericProps extends PropsWithChildren {
 export function SlidingPanelGeneric({
   isOpen,
   direction = "right",
-  size = "20rem",
+  size = 25, // default to 25% of viewport
   className = "",
   zIndex = 3000,
   children,
 }: SlidingPanelGenericProps) {
   // Calculate dynamic styles based on direction
   const getPositionStyles = () => {
+    const sizeInPercent = `${Math.min(Math.max(size, 0), 100)}%`;
     const baseStyles = {
       position: "fixed" as const,
       transition: "transform 300ms ease-in-out",
@@ -31,28 +32,28 @@ export function SlidingPanelGeneric({
         top: 0,
         right: 0,
         height: "100%",
-        width: size,
+        width: sizeInPercent,
         transform: `translateX(${isOpen ? "0" : "100%"})`,
       },
       left: {
         top: 0,
         left: 0,
         height: "100%",
-        width: size,
+        width: sizeInPercent,
         transform: `translateX(${isOpen ? "0" : "-100%"})`,
       },
       top: {
         top: 0,
         left: 0,
         width: "100%",
-        height: size,
+        height: sizeInPercent,
         transform: `translateY(${isOpen ? "0" : "-100%"})`,
       },
       bottom: {
         bottom: 0,
         left: 0,
         width: "100%",
-        height: size,
+        height: sizeInPercent,
         transform: `translateY(${isOpen ? "0" : "100%"})`,
       },
     };
