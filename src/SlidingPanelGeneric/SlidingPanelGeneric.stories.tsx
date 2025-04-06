@@ -29,6 +29,11 @@ const meta = {
       control: "number",
       description: "Z-index of the panel (default: 3000)",
     },
+    preventScroll: {
+      control: "boolean",
+      description:
+        "Whether to prevent scrolling of the main content when panel is open (default: true)",
+    },
     children: {
       control: "text",
       description: "Content to be displayed inside the panel",
@@ -42,7 +47,7 @@ const meta = {
           background: "#f5f5f5",
           padding: "2rem",
           fontFamily: "system-ui, -apple-system, sans-serif",
-          minHeight: "100vh",
+          minHeight: "200vh",
         }}
       >
         <div
@@ -59,7 +64,8 @@ const meta = {
           <h1 style={{ marginTop: 0, color: "#333" }}>Main Content</h1>
           <p style={{ color: "#666", lineHeight: 1.6 }}>
             This is the main content area of the page. The sliding panel will
-            appear from the selected direction when opened.
+            appear from the selected direction when opened. Try scrolling when
+            the panel is open!
           </p>
           <div style={{ marginTop: "2rem" }}>
             <h2 style={{ color: "#333" }}>Features</h2>
@@ -67,9 +73,24 @@ const meta = {
               <li>Slides from any direction (right, left, top, bottom)</li>
               <li>Customizable size (0-100% of viewport)</li>
               <li>Adjustable z-index for layering</li>
+              <li>Prevents main content scrolling when open</li>
               <li>Smooth transitions</li>
               <li>Flexible content</li>
             </ul>
+          </div>
+          <div style={{ marginTop: "2rem" }}>
+            <h2 style={{ color: "#333" }}>Scroll Test Content</h2>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} style={{ marginBottom: "2rem" }}>
+                <h3 style={{ color: "#444" }}>Section {i + 1}</h3>
+                <p style={{ color: "#666", lineHeight: 1.6 }}>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                  laboris nisi ut aliquip ex ea commodo consequat.
+                </p>
+              </div>
+            ))}
           </div>
         </div>
         <Story />

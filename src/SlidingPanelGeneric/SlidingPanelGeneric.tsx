@@ -1,5 +1,6 @@
 import type { PropsWithChildren } from "react";
 import * as styles from "./SlidingPanelGeneric.css";
+import { useScrollLock } from "./useScrollLock";
 
 export type SlideDirection = "right" | "left" | "top" | "bottom";
 
@@ -9,6 +10,7 @@ interface SlidingPanelGenericProps extends PropsWithChildren {
   size?: number;
   className?: string;
   zIndex?: number;
+  preventScroll?: boolean;
 }
 
 export function SlidingPanelGeneric({
@@ -17,8 +19,12 @@ export function SlidingPanelGeneric({
   size = 25, // default to 25% of viewport
   className = "",
   zIndex = 3000,
+  preventScroll = true,
   children,
 }: SlidingPanelGenericProps) {
+  // Lock scrolling when panel is open (if preventScroll is true)
+  useScrollLock(isOpen && preventScroll);
+
   // Calculate dynamic styles based on direction
   const getPositionStyles = () => {
     const sizeInPercent = `${Math.min(Math.max(size, 0), 100)}%`;
@@ -70,7 +76,7 @@ export function SlidingPanelGeneric({
     boxShadow:
       "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
     zIndex,
-    overflow: "hidden",
+    overflow: "auto", // Changed from 'hidden' to 'auto' to allow panel content to scroll
   };
 
   return (
