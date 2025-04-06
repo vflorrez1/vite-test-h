@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactNode } from "react";
+import React, { useState, useEffect, ReactNode, useMemo } from "react";
 import {
   BreakpointContext,
   BreakpointState,
@@ -13,48 +13,71 @@ interface BreakpointProviderProps {
 export const BreakpointProvider: React.FC<BreakpointProviderProps> = ({
   children,
 }) => {
-  const getMatches = (): BreakpointState => {
+  const [state, setState] = useState<BreakpointState>(() => {
     const width = window.innerWidth;
-    return Object.keys(breakpoints).reduce(
-      (acc, key) => {
-        const typedKey = key as BreakpointKey;
-        acc.below[typedKey] = width < breakpoints[typedKey];
-        acc.above[typedKey] = width >= breakpoints[typedKey];
-        return acc;
-      },
-      {
-        below: {} as Record<BreakpointKey, boolean>,
-        above: {} as Record<BreakpointKey, boolean>,
-      }
-    );
-  };
+    const initialState: BreakpointState = {
+      below: {} as Record<BreakpointKey, boolean>,
+      above: {} as Record<BreakpointKey, boolean>,
+    };
 
-  const [matches, setMatches] = useState<BreakpointState>(getMatches);
+    Object.entries(breakpoints).forEach(([key, value]) => {
+      const typedKey = key as BreakpointKey;
+      initialState.below[typedKey] = width < value;
+      initialState.above[typedKey] = width >= value;
+    });
+
+    return initialState;
+  });
 
   useEffect(() => {
-    const updateMatches = () => setMatches(getMatches());
-
     const mediaQueries = (Object.keys(breakpoints) as BreakpointKey[]).map(
-      (key) => {
-        const mediaQuery = window.matchMedia(
-          `(max-width: ${breakpoints[key]}px)`
-        );
-        mediaQuery.addEventListener("change", updateMatches);
-        return mediaQuery;
-      }
+      (key) => window.matchMedia(`(max-width: ${breakpoints[key]}px)`)
     );
 
-    updateMatches();
+    const checkBreakpoints = () => {
+      setState((prev) => {
+        let hasChanged = false;
+        const newState = { ...prev };
+
+        mediaQueries.forEach((mq, index) => {
+          const key = Object.keys(breakpoints)[index] as BreakpointKey;
+          if (prev.below[key] !== mq.matches) {
+            hasChanged = true;
+            newState.below[key] = mq.matches;
+            newState.above[key] = !mq.matches;
+          }
+        });
+
+        return hasChanged ? newState : prev;
+      });
+    };
+
+    // Check breakpoints on mount
+    checkBreakpoints();
+
+    // Use requestAnimationFrame to throttle updates
+    let frameId: number;
+    const handleResize = () => {
+      if (frameId) {
+        cancelAnimationFrame(frameId);
+      }
+      frameId = requestAnimationFrame(checkBreakpoints);
+    };
+
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      mediaQueries.forEach((mq) =>
-        mq.removeEventListener("change", updateMatches)
-      );
+      window.removeEventListener("resize", handleResize);
+      if (frameId) {
+        cancelAnimationFrame(frameId);
+      }
     };
   }, []);
 
+  const contextValue = useMemo(() => state, [state]);
+
   return (
-    <BreakpointContext.Provider value={matches}>
+    <BreakpointContext.Provider value={contextValue}>
       {children}
     </BreakpointContext.Provider>
   );
