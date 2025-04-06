@@ -25,63 +25,34 @@ export function SlidingPanelGeneric({
   // Lock scrolling when panel is open (if preventScroll is true)
   useScrollLock(isOpen && preventScroll);
 
-  // Calculate dynamic styles based on direction
-  const getPositionStyles = () => {
-    const sizeInPercent = `${Math.min(Math.max(size, 0), 100)}%`;
-    const baseStyles = {
-      position: "fixed" as const,
-      transition: "transform 300ms ease-in-out",
-    };
+  // Get the appropriate direction and transform classes
+  const getPanelClasses = () => {
+    const directionClass = {
+      right: styles.rightPanel,
+      left: styles.leftPanel,
+      top: styles.topPanel,
+      bottom: styles.bottomPanel,
+    }[direction];
 
-    const directionStyles = {
-      right: {
-        top: 0,
-        right: 0,
-        height: "100%",
-        width: sizeInPercent,
-        transform: `translateX(${isOpen ? "0" : "100%"})`,
-      },
-      left: {
-        top: 0,
-        left: 0,
-        height: "100%",
-        width: sizeInPercent,
-        transform: `translateX(${isOpen ? "0" : "-100%"})`,
-      },
-      top: {
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: sizeInPercent,
-        transform: `translateY(${isOpen ? "0" : "-100%"})`,
-      },
-      bottom: {
-        bottom: 0,
-        left: 0,
-        width: "100%",
-        height: sizeInPercent,
-        transform: `translateY(${isOpen ? "0" : "100%"})`,
-      },
-    };
+    const transformClass = {
+      right: isOpen ? styles.rightOpen : styles.rightClosed,
+      left: isOpen ? styles.leftOpen : styles.leftClosed,
+      top: isOpen ? styles.topOpen : styles.topClosed,
+      bottom: isOpen ? styles.bottomOpen : styles.bottomClosed,
+    }[direction];
 
-    return {
-      ...baseStyles,
-      ...directionStyles[direction],
-    };
+    return [styles.basePanelStyle, directionClass, transformClass].join(" ");
   };
 
   const panelStyles = {
-    ...getPositionStyles(),
-    backgroundColor: "white",
-    boxShadow:
-      "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+    width: direction === "right" || direction === "left" ? `${size}%` : "100%",
+    height: direction === "top" || direction === "bottom" ? `${size}%` : "100%",
     zIndex,
-    overflow: "auto", // Changed from 'hidden' to 'auto' to allow panel content to scroll
-    ...style, // Merge with user-provided styles
+    ...style,
   };
 
   return (
-    <div style={panelStyles}>
+    <div className={getPanelClasses()} style={panelStyles}>
       <div className={styles.panelContent}>{children}</div>
     </div>
   );
