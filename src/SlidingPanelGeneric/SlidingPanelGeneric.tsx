@@ -8,7 +8,7 @@ interface SlidingPanelGenericProps extends PropsWithChildren {
   isOpen: boolean;
   direction?: SlideDirection;
   size?: number;
-  className?: string;
+  style?: React.CSSProperties;
   zIndex?: number;
   preventScroll?: boolean;
 }
@@ -17,7 +17,7 @@ export function SlidingPanelGeneric({
   isOpen,
   direction = "right",
   size = 25, // default to 25% of viewport
-  className = "",
+  style = {},
   zIndex = 3000,
   preventScroll = true,
   children,
@@ -77,10 +77,11 @@ export function SlidingPanelGeneric({
       "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
     zIndex,
     overflow: "auto", // Changed from 'hidden' to 'auto' to allow panel content to scroll
+    ...style, // Merge with user-provided styles
   };
 
   return (
-    <div className={className} style={panelStyles}>
+    <div style={panelStyles}>
       <div className={styles.panelContent}>{children}</div>
     </div>
   );
